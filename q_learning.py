@@ -25,20 +25,35 @@ def run_q_learning(env,train_timesteps_M):
         
         if epsilon_schedule:
             ### FILL IN HERE ###
-            raise NotImplementedError("Epsilon schedule not implemented")
+            frac = 1 - timestep / (train_timesteps_M * 1e6)
+            current_epsilon = max(0.05, EPSILON * frac)
+
+            ####################
+            #raise NotImplementedError("Epsilon schedule not implemented")
         else:
             current_epsilon = EPSILON
 
         if alpha_schedule:
             ### FILL IN HERE ###
-            raise NotImplementedError("Alpha schedule not implemented")
+            frac = 1 - timestep / (train_timesteps_M * 1e6)
+            current_alpha = max(0.01, ALPHA * frac)
+
+            ####################
+            #raise NotImplementedError("Alpha schedule not implemented")
         else:
             current_alpha = ALPHA
 
         indices = state_to_indices(state, [x_vals, x_dot_vals, theta_vals, theta_dot_vals])
         
         ### FILL IN HERE ###
-        raise NotImplementedError("Action selection not implemented")
+        #Action Selection
+        if np.random.rand() < current_epsilon:
+            action = np.random.randint(len(ACTION_VALS))
+        else:
+            action = np.argmax(Q[indices])
+
+        ####################
+        #raise NotImplementedError("Action selection not implemented")
 
         next_state, _, terminated, truncated, _ = env.step(int(action))
         next_indices = state_to_indices(next_state, [x_vals, x_dot_vals, theta_vals, theta_dot_vals])
@@ -48,7 +63,12 @@ def run_q_learning(env,train_timesteps_M):
         # Q-value update
         best_next_q = np.max(Q[next_indices])
         ### FILL IN HERE ###
-        raise NotImplementedError("Q-value update not implemented")
+        td_target = reward + GAMMA * best_next_q
+        td_error = td_target - Q[indices][action]
+        Q[indices][action] += current_alpha * td_error
+
+        ####################
+        #raise NotImplementedError("Q-value update not implemented")
 
         state = next_state
         if terminated or truncated:

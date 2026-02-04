@@ -71,7 +71,11 @@ def reward_function(state, terminated):
 # Quadratic cost function
 def quadratic_cost(state):
     ### FILL IN HERE ### hint: CART_COST_WEIGHT, POLE_ANGLE_COST_WEIGHT
-    raise NotImplementedError("Quadratic cost function not implemented")
+    x, x_dot, theta, theta_dot = state
+    return CART_COST_WEIGHT * x**2 + POLE_ANGLE_COST_WEIGHT * theta**2
+
+    ####################
+    #raise NotImplementedError("Quadratic cost function not implemented")
 
 def evaluate_agent(env, type, policy=None, Q=None):
     if type == "Q":

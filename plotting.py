@@ -17,7 +17,7 @@ def plot_policy_value(policy, V, N_bins, x_vals, theta_vals):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
     im1 = ax1.imshow(v_slice, origin='lower', extent=extent, aspect='auto', cmap='viridis')
-    im2 = ax2.imshow(p_slice, origin='lower', extent=extent, aspect='auto', cmap='managua')
+    im2 = ax2.imshow(p_slice, origin='lower', extent=extent, aspect='auto', cmap='magma')
     fig.colorbar(im1, ax=ax1,)
     fig.colorbar(im2, ax=ax2, ticks=[0, 1])
     ax1.set_title(r"Value Function $V(x, \dot{x}=0, \theta, \dot{\theta}=0)$")

@@ -21,7 +21,10 @@ def value_iteration():
             next_indices = state_to_indices(next_states, [x_vals, x_dot_vals, theta_vals, theta_dot_vals])
 
             ### FILL IN HERE ###
-            raise NotImplementedError("Bellman update not implemented")
+            future_val = current_state_costs + GAMMA * V_old[next_indices]
+
+            ####################
+            #raise NotImplementedError("Bellman update not implemented")
             
             # Handle termination
             new_estimate = np.where(is_terminal[next_indices], TERMINAL_COST, future_val)
@@ -29,17 +32,49 @@ def value_iteration():
             V_new.append(new_estimate)
 
         ### FILL IN HERE ### 
-        raise NotImplementedError("Value update not implemented")
+        V_new = np.stack(V_new, axis=0)
+        V = np.min(V_new, axis=0)
+
+        ####################
+        #raise NotImplementedError("Value update not implemented")
 
         ### FILL IN HERE ###
-        raise NotImplementedError("Check convergence not implemented")
+        diff = np.max(np.abs(V - V_old))
+
+        ####################
+        #raise NotImplementedError("Check convergence not implemented")
         print(f"[{it}] diff = {diff:.5f}", "value stats: ", np.min(V), np.max(V), np.mean(V), end='\r')
         if diff < DELTA: print(f"VI completed in {it} iterations with diff {diff:.5f}"); break
     return V
 
 def compute_policy(V):
     ### FILL IN HERE ### hint: Compute policy
-    raise NotImplementedError("Compute policy not implemented")
+    # Initialize array
+    Q_vals = []
+
+    # Compute current cost
+    current_state_costs = quadratic_cost(state_tensor)
+
+    # Looping for every set of actions
+    for action in ACTION_VALS:
+        next_states = dynamics(state_tensor, action)
+        next_indices = state_to_indices(
+            next_states,
+            [x_vals, x_dot_vals, theta_vals, theta_dot_vals]
+        )
+
+        future_val = current_state_costs + GAMMA * V[next_indices]
+        new_estimate = np.where(is_terminal[next_indices], TERMINAL_COST, future_val)
+
+        Q_vals.append(new_estimate)
+    
+    Q_vals = np.stack(Q_vals, axis=0)
+
+    # Select policy with the minimum cost
+    policy = np.argmin(Q_vals, axis=0)
+    
+    ####################
+    #raise NotImplementedError("Compute policy not implemented")
     return policy
 
 

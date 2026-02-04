@@ -16,7 +16,10 @@ class CartpoleMPC:
         ### FILL IN HERE ### hint: Q, R from provided cost function parameters
         # self.Q = np.diag([...])
         # self.R = np.array([[...]])
-        raise NotImplementedError("MPC/iLQR Parameters not implemented")
+        self.Q = np.diag([1.0, 0.1, 10.0, 0.1])
+        self.R = np.array([[0.01]])
+        ####################
+        #raise NotImplementedError("MPC/iLQR Parameters not implemented")
 
         # Warm start buffer
         self.U_guess = np.zeros((self.H, 1))
@@ -73,7 +76,34 @@ class CartpoleMPC:
                 lu = self.R @ U[t]
 
                 ### FILL IN HERE ### hint: Q-function derivatives, control gains, value function update
-                raise NotImplementedError("iLQR not implemented")
+                lxx = self.Q
+                luu = self.R
+                lux = np.zeros((1,4))
+
+                Qx = lx + A.T @ Vx
+                Qu = lu + B.T @ Vx
+                Qxx = lxx + A.T @ Vxx @ A
+                Quu = luu + B.T @ Vxx @ B
+                Qux = lux + B.T @ Vxx @ A
+
+                Quu_inv = np.linalg.inv(Quu + 1e-6*np.eye(1))
+
+                k = -Quu_inv @ Qu
+                K = -Quu_inv @ Qux
+
+                ks[t] = k
+                Ks[t] = K
+
+                #2nd-order taylor expansion
+                Vx = Qx + (K.T @ Quu @ k) + (K.T @ Qu + Qux.T @ k)
+                Vxx = Qxx + (K.T @ Quu @ K) + (K.T @ Qux + Qux.T @ K)
+
+                #1st-order taylor expansion
+                #Vx = Qx + Qux.T @ k
+                #Vxx = Qxx + Qux.T @ K
+
+                ####################
+                #raise NotImplementedError("iLQR not implemented")
                 
             # Forward Pass (Line search simplified for brevity)
             X_new = np.zeros_like(X)
@@ -82,7 +112,11 @@ class CartpoleMPC:
             
             for t in range(self.H):
                 ### FILL IN HERE ### hint: compute U_new[t] and X_new[t+1]
-                raise NotImplementedError("iLQR not implemented")
+                U_new[t] = U[t] + ks[t] + Ks[t] @ (X_new[t] - X[t])
+                X_new[t+1] = dynamics(X_new[t], U_new[t], continuous_action=True)
+
+                ####################
+                #raise NotImplementedError("iLQR not implemented")
             
             X, U = X_new, U_new
 
